@@ -13,7 +13,26 @@ namespace Common
     {
         [ThreadStatic]
         private static FirefoxDriver driver;
-        protected IWebDriver Driver => driver;
+        protected static IWebDriver Driver => driver;
+
+        protected void MakeScreenshot()
+        {
+            var screenshot = ((ITakesScreenshot)Driver).GetScreenshot();
+            var filename = $"{TestContext.CurrentContext.Test.MethodName}_screenshot_{DateTime.Now.Ticks}.png";
+            var path = $"{AllureLifecycle.Instance.ResultsDirectory}\\{filename}";
+            screenshot.SaveAsFile(path);
+            TestContext.AddTestAttachment(path);
+            AllureApi.AddAttachment(filename, "image/png", path);
+        }
+
+        protected void ClickByXPath(string xpath)
+            => Driver.FindElement(By.XPath(xpath)).Click();
+
+        protected void ClickByCssSelector(string selector)
+            => Driver.FindElement(By.CssSelector(selector)).Click();
+
+        protected void ClickByText(string text, int parentN = 0)
+            => ClickByXPath($"//*[contains(text(), '{text}')]" + "/..".Repeat(parentN));
 
         [SetUp]
         public void StartBrowser() => driver = new();
@@ -23,14 +42,7 @@ namespace Common
         {
             // if any error, make screenshot
             if (TestContext.CurrentContext.Result.Outcome != ResultState.Success)
-            {
-                var screenshot = ((ITakesScreenshot)Driver).GetScreenshot();
-                var filename = $"{TestContext.CurrentContext.Test.MethodName}_screenshot_{DateTime.Now.Ticks}.png";
-                var path = $"{AllureLifecycle.Instance.ResultsDirectory}\\{filename}";
-                screenshot.SaveAsFile(path);
-                TestContext.AddTestAttachment(path);
-                AllureApi.AddAttachment(filename, "image/png", path);
-            }
+                MakeScreenshot();
             driver.Close();
         }
     }
