@@ -15,7 +15,7 @@ namespace Common
         private static FirefoxDriver driver;
         protected static IWebDriver Driver => driver;
 
-        protected void MakeScreenshot()
+        protected static void MakeScreenshot()
         {
             var screenshot = ((ITakesScreenshot)Driver).GetScreenshot();
             var filename = $"{TestContext.CurrentContext.Test.MethodName}_screenshot_{DateTime.Now.Ticks}.png";
@@ -24,15 +24,6 @@ namespace Common
             TestContext.AddTestAttachment(path);
             AllureApi.AddAttachment(filename, "image/png", path);
         }
-
-        protected void ClickByXPath(string xpath)
-            => Driver.FindElement(By.XPath(xpath)).Click();
-
-        protected void ClickByCssSelector(string selector)
-            => Driver.FindElement(By.CssSelector(selector)).Click();
-
-        protected void ClickByText(string text, int parentN = 0)
-            => ClickByXPath($"//*[contains(text(), '{text}')]" + "/..".Repeat(parentN));
 
         [SetUp]
         public void StartBrowser() => driver = new();

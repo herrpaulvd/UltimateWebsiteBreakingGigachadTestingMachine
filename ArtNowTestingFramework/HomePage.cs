@@ -4,25 +4,26 @@ using OpenQA.Selenium;
 
 namespace ArtNowTestingFramework
 {
-    public class HomePage : Common.TestBase
+    public class HomePage : ArtNowWebPage
     {
-        internal HomePage() { }
+        private HomePage() { }
 
+        [AllureStep("Enter home page")]
         public static HomePage Enter()
         {
             var result = new HomePage();
             Driver.Url = "https://artnow.ru/";
+            CheckTitle("Купить картины современных художников и другие произведения от 1000р");
             return result;
         }
 
         [AllureStep]
-        public HomePage ClickLeftMenuItem(string text)
+        public SectionPage ClickLeftMenuItem(string text, string expectedTitle)
         {
             AllureApi.SetStepName($"Click on menu item \"{text}\"");
             ClickByText("Показать еще...", 2);
             ClickByText(text, 1);
-            MakeScreenshot();
-            return this;
+            return SectionPage.Enter(text, expectedTitle);
         }
     }
 }
