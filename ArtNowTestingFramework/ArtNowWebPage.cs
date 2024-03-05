@@ -8,29 +8,40 @@ using System.Threading.Tasks;
 using Common;
 using NUnit.Allure.Attributes;
 using Allure.Net.Commons;
+using System.IO;
 
 namespace ArtNowTestingFramework
 {
     public abstract class ArtNowWebPage : TestBase
     {
-        protected static void ClickByXPath(string xpath)
-            => Driver.FindElement(By.XPath(xpath)).Click();
+        protected IWebElement Find(string xpath, IWebElement? parent = null)
+            => ((ISearchContext?)parent ?? Driver).FindElement(By.XPath(xpath));
 
-        protected static void ClickByCssSelector(string selector)
-            => Driver.FindElement(By.CssSelector(selector)).Click();
+        protected void ClickByText(string text, int parentN = 0)
+            => Find($"//*[contains(text(), '{text}')]" + "/..".Repeat(parentN)).Click();
 
         [AllureStep]
-        protected static void ClickByText(string text, int parentN = 0)
+        protected void CheckTitle(params string[] titleElements)
         {
-            AllureApi.SetStepName($"Click on the element being the ancestor #{parentN} of the element containing text '{text}'");
-            ClickByXPath($"//*[contains(text(), '{text}')]" + "/..".Repeat(parentN));
+            AllureApi.SetStepName("Check that the page title contains "
+                + string.Join(',', titleElements.Select(t => $"'{t}'")));
+
+            string singleChecker(string s) => $"contains(text(), '{s}')";
+            const string separator = " and ";
+            Find($"//title[{string.Join(separator, titleElements.Select(singleChecker))}]");
         }
 
-        [AllureStep]
-        protected static void CheckTitle(string title)
+        protected ArtNowWebPage(params string[] titleElements)
+            => CheckTitle(titleElements);
+
+        public TPage Assume<TPage>() where TPage : ArtNowWebPage
+            => (TPage)this;
+
+        [AllureStep("Click favorites button")]
+        public PaintingsContainingPage ClickFavorties()
         {
-            AllureApi.SetStepName("Check that the page title is " + title);
-            Driver.FindElement(By.XPath($"//title[contains(text(), '{title}')]"));
+            Find("//img[@alt='Избранное']").Click();
+            return PaintingsContainingPage.EnterUnclassified("favorites page", "Избранное");
         }
     }
 }

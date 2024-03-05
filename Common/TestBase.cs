@@ -15,7 +15,7 @@ namespace Common
         private static FirefoxDriver driver;
         protected static IWebDriver Driver => driver;
 
-        protected static void MakeScreenshot()
+        protected void MakeScreenshot()
         {
             var screenshot = ((ITakesScreenshot)Driver).GetScreenshot();
             var filename = $"{TestContext.CurrentContext.Test.MethodName}_screenshot_{DateTime.Now.Ticks}.png";

@@ -4,17 +4,16 @@ using OpenQA.Selenium;
 
 namespace ArtNowTestingFramework
 {
-    public class HomePage : ArtNowWebPage
+    public sealed class HomePage : PaintingsContainingPage
     {
-        private HomePage() { }
+        private HomePage()
+            : base("Купить картины современных художников и другие произведения от 1000р") { }
 
         [AllureStep("Enter home page")]
         public static HomePage Enter()
         {
-            var result = new HomePage();
             Driver.Url = "https://artnow.ru/";
-            CheckTitle("Купить картины современных художников и другие произведения от 1000р");
-            return result;
+            return new();
         }
 
         [AllureStep]

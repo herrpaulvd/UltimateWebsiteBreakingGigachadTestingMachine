@@ -10,36 +10,28 @@ using System.Threading.Tasks;
 
 namespace ArtNowTestingFramework
 {
-    public class SectionPage : ArtNowWebPage
+    public sealed class SectionPage : PaintingsContainingPage
     {
         private string title;
 
-        private SectionPage(string title) => this.title = title;
+        private SectionPage(string title)
+            : base(title) => this.title = title;
 
         [AllureStep]
-        public static SectionPage Enter(string sectionName, string expectedTitle)
+        internal static SectionPage Enter(string sectionName, string expectedTitle)
         {
             AllureApi.SetStepName($"Enter section '{sectionName}'s page");
-            CheckTitle(expectedTitle);
-            return new SectionPage(expectedTitle);
+            return new(expectedTitle);
         }
 
         [AllureStep]
         public SectionPage MakeSectionRelatedQuery(string query)
         {
             AllureApi.SetStepName($"Search for '{query}'");
-            var input = Driver.FindElement(By.XPath("//input[@id='searchstr']"));
+            var input = Find("//input[@id='searchstr']");
             input.SendKeys(query + "\n");
-            input.FindElement(By.XPath("../..//button")).Click();
+            Find("../..//button", input).Click();
             CheckTitle(title);
-            return this;
-        }
-
-        [AllureStep]
-        public SectionPage FindPainting(string name)
-        {
-            AllureApi.SetStepName($"Check that the painting '{name}' is presented in the search results");
-            Driver.FindElement(By.XPath($"//img[contains(@alt, '{name}')]"));
             return this;
         }
     }
