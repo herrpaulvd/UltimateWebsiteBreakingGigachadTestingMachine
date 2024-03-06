@@ -4,6 +4,9 @@ using OpenQA.Selenium;
 
 namespace ArtNowTestingFramework
 {
+    /// <summary>
+    /// Home page at "artnow.ru"
+    /// </summary>
     public sealed class HomePage : PaintingsContainingPage
     {
         private HomePage()
@@ -16,6 +19,12 @@ namespace ArtNowTestingFramework
             return new();
         }
 
+        /// <summary>
+        /// Click the item in the left bar to go to a specific section
+        /// </summary>
+        /// <param name="text">The item name</param>
+        /// <param name="expectedTitle">What we expect to see in the title of the section page</param>
+        /// <returns></returns>
         [AllureStep]
         public SectionPage ClickLeftMenuItem(string text, string expectedTitle)
         {

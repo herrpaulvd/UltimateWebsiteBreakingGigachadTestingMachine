@@ -7,14 +7,17 @@ using OpenQA.Selenium.Firefox;
 namespace Common
 {
     /// <summary>
-    /// The main class to perform tests
+    /// The base class to perform tests
     /// </summary>
     public class TestBase
     {
-        [ThreadStatic]
+        [ThreadStatic] // to support multithreading
         private static FirefoxDriver driver;
         protected static IWebDriver Driver => driver;
 
+        /// <summary>
+        /// Save screeenshot with unique name
+        /// </summary>
         protected void MakeScreenshot()
         {
             var screenshot = ((ITakesScreenshot)Driver).GetScreenshot();

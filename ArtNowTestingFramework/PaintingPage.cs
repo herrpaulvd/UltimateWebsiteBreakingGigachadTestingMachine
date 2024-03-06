@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace ArtNowTestingFramework
 {
+    /// <summary>
+    /// Page of a single painting
+    /// </summary>
     public sealed class PaintingPage : ArtNowWebPage
     {
         private PaintingPage(params string[] titleElements) : base(titleElements) { }
@@ -20,6 +23,12 @@ namespace ArtNowTestingFramework
             return new PaintingPage(paintingName, "купить на ArtNow.ru");
         }
 
+        /// <summary>
+        /// Check description for a specific key-value pair
+        /// </summary>
+        /// <param name="key">e.g. 'Стиль'</param>
+        /// <param name="value">e.g. 'Реализм'</param>
+        /// <returns></returns>
         [AllureStep]
         public PaintingPage CheckDetailsField(string key, string value)
         {

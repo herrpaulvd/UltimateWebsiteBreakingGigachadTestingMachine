@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace ArtNowTestingFramework
 {
+    /// <summary>
+    /// Page of a specific section, e.g. 'Батик'
+    /// </summary>
     public sealed class SectionPage : PaintingsContainingPage
     {
         private string title;
@@ -24,10 +27,11 @@ namespace ArtNowTestingFramework
             return new(expectedTitle);
         }
 
+        // means in the left bar
         [AllureStep]
         public SectionPage MakeSectionRelatedQuery(string query)
         {
-            AllureApi.SetStepName($"Search for '{query}'");
+            AllureApi.SetStepName($"Search for '{query}' in current section");
             var input = Find("//input[@id='searchstr']");
             input.SendKeys(query + "\n");
             Find("../..//button", input).Click();

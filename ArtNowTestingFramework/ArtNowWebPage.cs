@@ -12,14 +12,23 @@ using System.IO;
 
 namespace ArtNowTestingFramework
 {
-    public abstract class ArtNowWebPage : TestBase
+    /// <summary>
+    /// Parent of all pages
+    /// </summary>
+    public abstract class ArtNowWebPage : WebElementContainer
     {
-        protected IWebElement Find(string xpath, IWebElement? parent = null)
-            => ((ISearchContext?)parent ?? Driver).FindElement(By.XPath(xpath));
+        /// <summary>
+        /// Click on the n-th ancestor of an element containg the given text
+        /// </summary>
+        /// <param name="text">Text to find</param>
+        /// <param name="ancestorN">Ancestor degree</param>
+        protected void ClickByText(string text, int ancestorN = 0)
+            => Find($"//*[contains(text(), '{text}')]" + "/..".Repeat(ancestorN)).Click();
 
-        protected void ClickByText(string text, int parentN = 0)
-            => Find($"//*[contains(text(), '{text}')]" + "/..".Repeat(parentN)).Click();
-
+        /// <summary>
+        /// Checks whether page title contains these substrings
+        /// </summary>
+        /// <param name="titleElements">Substrings to search</param>
         [AllureStep]
         protected void CheckTitle(params string[] titleElements)
         {
@@ -34,6 +43,7 @@ namespace ArtNowTestingFramework
         protected ArtNowWebPage(params string[] titleElements)
             => CheckTitle(titleElements);
 
+        // just cast designed to be method for more beautiful test look
         public TPage Assume<TPage>() where TPage : ArtNowWebPage
             => (TPage)this;
 
@@ -42,6 +52,21 @@ namespace ArtNowTestingFramework
         {
             Find("//img[@alt='Избранное']").Click();
             return PaintingsContainingPage.EnterUnclassified("favorites page", "Избранное");
+        }
+
+        /// <summary>
+        /// Make global query on top-center search bar
+        /// </summary>
+        /// <param name="query">String to type</param>
+        /// <returns></returns>
+        [AllureStep]
+        public PaintingsContainingPage MakeQuery(string query)
+        {
+            AllureApi.SetStepName($"Global search for '{query}'");
+            var searchSpan = Find("//span[@class='search-bar']");
+            Find(".//input[@type='text']", searchSpan).SendKeys(query);
+            Find(".//button[@type='submit']", searchSpan).Click();
+            return PaintingsContainingPage.EnterUnclassified("search results page", "Подбор картин и работ");
         }
     }
 }
