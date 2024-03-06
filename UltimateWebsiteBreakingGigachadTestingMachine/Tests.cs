@@ -38,6 +38,17 @@ namespace UltimateWebsiteBreakingGigachadTestingMachine
             .FindPainting("Трамвайный путь", click)
             ;
 
+
+        [Test]
+        public void Fail_2_1()
+            => HomePage
+            .Enter()
+            .ClickLeftMenuItem("Вышитые картины",
+                "Купить вышитые картины")
+            .MakeSectionRelatedQuery("Городской пейзаж")
+            .FindPainting("Трамвайный путъ", false)
+            ;
+
         /// <summary>
         /// Scenario #2.1
         /// </summary>

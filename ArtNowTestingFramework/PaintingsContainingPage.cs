@@ -42,15 +42,27 @@ namespace ArtNowTestingFramework
             AllureApi.SetStepName($"Check that the painting '{name}' is presented in the search results"
                 + (click ? " and click it" : ""));
 
-            // !!! SOMEHOW contains(text(), '{name}') DOES NOT WORK in this case
-            // hypothesis: <br> element breaks the logic this function works according to
+            int staleAttempts = 10;
             IWebElement? paintingNameDiv = null;
-            waiter.Until(d => (paintingNameDiv =
-                Driver.FindElements(By.XPath("//div[@itemprop='name']")).FirstOrDefault(e => e.Text.Contains(name))) is not null);
-            Assert.True(paintingNameDiv is not null);
+            while (staleAttempts --> 0)
+            {
+                try // because of strange chromium-based browser behaviour
+                {
+                    // !!! SOMEHOW contains(text(), '{name}') DOES NOT WORK in this case
+                    // hypothesis: <br> element breaks the logic this function works according to
+                    waiter.Until(d => (paintingNameDiv =
+                        Driver.FindElements(By.XPath("//div[@itemprop='name']")).FirstOrDefault(e => e.Text.Contains(name))) is not null);
+                    Assert.True(paintingNameDiv is not null);
+                }
+                catch(StaleElementReferenceException)
+                {
+                    staleAttempts = 0;
+                }
+            }
+            
             if (click)
             {
-                paintingNameDiv.Click();
+                paintingNameDiv!.Click();
                 return PaintingPage.Enter(name);
             }
             return this;

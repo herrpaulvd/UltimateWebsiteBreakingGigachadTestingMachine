@@ -10,7 +10,8 @@ namespace ArtNowTestingFramework
     public sealed class HomePage : PaintingsContainingPage
     {
         private HomePage()
-            : base("Купить картины современных художников и другие произведения от 1000р") { }
+            : base("Купить картины современных художников и другие произведения от 1000р")
+            => CheckBrowser();
 
         [AllureStep("Enter home page")]
         public static HomePage Enter()

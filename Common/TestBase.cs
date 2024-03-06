@@ -1,4 +1,5 @@
 ﻿using Allure.Net.Commons;
+using NUnit.Allure.Attributes;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
@@ -18,6 +19,12 @@ namespace Common
 
         public TestBase(Type? TBrowserDriver = null)
             => this.TBrowserDriver = TBrowserDriver;
+
+        [AllureStep]
+        public void CheckBrowser()
+        {
+            AllureApi.SetStepName("Current driver: " + Driver.GetType().Name);
+        }
 
         /// <summary>
         /// Save screeenshot with unique name
