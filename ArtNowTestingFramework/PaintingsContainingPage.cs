@@ -2,6 +2,7 @@
 using NUnit.Allure.Attributes;
 using NUnit.Framework;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,8 @@ namespace ArtNowTestingFramework
     /// </summary>
     public class PaintingsContainingPage : ArtNowWebPage
     {
+        private WebDriverWait waiter = new(Driver, TimeSpan.FromSeconds(10));
+
         protected PaintingsContainingPage(params string[] titleElements)
             : base(titleElements) { }
 
@@ -38,9 +41,13 @@ namespace ArtNowTestingFramework
         {
             AllureApi.SetStepName($"Check that the painting '{name}' is presented in the search results"
                 + (click ? " and click it" : ""));
+
             // !!! SOMEHOW contains(text(), '{name}') DOES NOT WORK in this case
             // hypothesis: <br> element breaks the logic this function works according to
-            var paintingNameDiv = Driver.FindElements(By.XPath("//div[@itemprop='name']")).First(e => e.Text.Contains(name));
+            IWebElement? paintingNameDiv = null;
+            waiter.Until(d => (paintingNameDiv =
+                Driver.FindElements(By.XPath("//div[@itemprop='name']")).FirstOrDefault(e => e.Text.Contains(name))) is not null);
+            Assert.True(paintingNameDiv is not null);
             if (click)
             {
                 paintingNameDiv.Click();
@@ -59,8 +66,7 @@ namespace ArtNowTestingFramework
             AllureApi.SetStepName($"Check that the 1st painting has name '{name}'");
             var paintingDiv = GetFirstPaintingDiv();
             var paintingDivNameElement = Find(".//div[@itemprop='name']", paintingDiv);
-            if (!paintingDivNameElement.Text.Contains(name))
-                throw new Exception("Text not found");
+            Assert.True(paintingDivNameElement.Text.Contains(name));
             return this;
         }
 

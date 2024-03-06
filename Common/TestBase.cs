@@ -11,9 +11,13 @@ namespace Common
     /// </summary>
     public class TestBase
     {
+        private Type? TBrowserDriver;
         [ThreadStatic] // to support multithreading
-        private static FirefoxDriver driver;
+        private static IWebDriver driver;
         protected static IWebDriver Driver => driver;
+
+        public TestBase(Type? TBrowserDriver = null)
+            => this.TBrowserDriver = TBrowserDriver;
 
         /// <summary>
         /// Save screeenshot with unique name
@@ -29,7 +33,8 @@ namespace Common
         }
 
         [SetUp]
-        public void StartBrowser() => driver = new();
+        public void StartBrowser()
+            => driver = (IWebDriver)Activator.CreateInstance(TBrowserDriver!)!;
 
         [TearDown]
         public void StopBrowser()

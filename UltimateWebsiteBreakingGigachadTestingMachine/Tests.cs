@@ -1,12 +1,15 @@
 ﻿using ArtNowTestingFramework;
 using NUnit.Allure.Core;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Edge;
+using OpenQA.Selenium.Firefox;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-[assembly:LevelOfParallelism(2)] // N of threads to run tests
+[assembly:LevelOfParallelism(4)] // N of threads to run tests
 // if unspecified, max available
 namespace UltimateWebsiteBreakingGigachadTestingMachine
 {
@@ -15,9 +18,13 @@ namespace UltimateWebsiteBreakingGigachadTestingMachine
     /// </summary>
     [AllureNUnit] // allure support
     [Parallelizable(ParallelScope.All)] // ||-support
-    // threads number is set in VS tests explorer settings
-    public class Tests : Common.TestBase
+    [TestFixture(typeof(FirefoxDriver))]
+    [TestFixture(typeof(EdgeDriver))] // chromium based too, so it's like Chrome
+    public class Tests<TBrowserDriver> : Common.TestBase
+        where TBrowserDriver : IWebDriver, new()
     {
+        public Tests() : base(typeof(TBrowserDriver)) { }
+
         /// <summary>
         /// Subscenario: goto "Вышитые картины"
         /// and find (and maybe click) "Городской пейзаж"
